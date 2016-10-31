@@ -1,0 +1,13 @@
+---
+- hosts: test
+  tasks:
+    - name: del crontab
+      shell: sed -i '/ntp/Id' /var/spool/cron/crontabs/root
+      ignore_errors: yes
+    - name: add crontab
+      cron: name="NTP Service" minute="0" hour="0" job="/usr/sbin/ntpdate ntp.devops.letv.com"
+    - name: add crontab log
+      shell: sed -i 's/^#cron/cron/' /etc/rsyslog.d/50-default.conf
+    - name: restart service
+      service: name=rsyslog state=restarted
+      tags: start
